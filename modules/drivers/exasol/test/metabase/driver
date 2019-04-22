@@ -1,0 +1,18 @@
+(ns metabase.driver.exasol-test
+  (:require [expectations :refer [expect]]
+            [metabase.driver.sql-jdbc.connection :as sql-jdbc.conn]
+            [metabase.test.data.datasets :refer [expect-with-driver]]
+            [metabase.test.util :as tu]))
+
+(expect-with-driver :exasol
+                    "UTC"
+                    (tu/db-timezone-id))
+
+;; make sure you can add additional connection string options (#6651)
+(expect
+ {:classname   "com.exasol.jdbc.EXADriver"
+  :subprotocol "exa"
+  :subname     "//localhost:5433/birds-near-me?ConnectionLoadBalance=1"}
+ (sql-jdbc.conn/connection-details->spec :exasol {:host               "localhost"
+                                                  :port               8563
+                                                  :db                 "revolut"}))

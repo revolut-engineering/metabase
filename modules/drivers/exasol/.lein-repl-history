@@ -1,0 +1,1 @@
+(dissoc {:host 1 :port 2 :schema 3} :host :port :dbname :db :ssl)
