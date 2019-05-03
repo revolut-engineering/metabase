@@ -17,7 +17,7 @@
 (defsetting max-simultaneous-queries-per-db
   (trs "Maximum number of simultaneous queries to allow per connected Database.")
   :type    :integer
-  :default 15)
+  :default 5)
 
 (defonce ^:private db-semaphore-channels (atom {}))
 
