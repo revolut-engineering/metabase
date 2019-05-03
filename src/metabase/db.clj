@@ -346,7 +346,7 @@
   https://www.mchange.com/projects/c3p0/#configuration_properties for descriptions of properties."
   {"minPoolSize"     1
    "initialPoolSize" 1
-   "maxPoolSize"     15})
+   "maxPoolSize"     5})
 
 (defn- new-connection-pool
   "Create a C3P0 connection pool for the given database `spec`."
