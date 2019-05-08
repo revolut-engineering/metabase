@@ -43,8 +43,13 @@
   "Can the ring request be permanently cached?"
   [{:keys [uri query-string]}]
   ;; match requests that are js/css and have a cache-busting query string
-  (or (str/includes? uri "/api/database")
-    (and query-string (re-matches #"^/app/dist/.*\.(js|css)$" uri))))
+  (and query-string (re-matches #"^/app/dist/.*\.(js|css)$" uri)))
+
+(defn- private-cacheable?
+  "Can the ring request be privately cached?"
+  [{:keys [uri query-string]}]
+  ;; match requests that are js/css and have a cache-busting query string
+  (and query-string (str/includes? uri "/api/database")))
 
 ;;; ------------------------------------------- AUTH & SESSION MANAGEMENT --------------------------------------------
 
@@ -174,7 +179,7 @@
    "Expires"        "Tue, 03 Jul 2001 06:00:00 GMT"
    "Last-Modified"  (du/format-date :rfc822)})
 
-(defn- cache-marked-api-headers
+(defn- cache-private-headers
   "Headers that tell browsers to cache an api response in private."
   []
   {"Cache-Control" "private, max-age=86400, must-revalidate, proxy-revalidate"})
@@ -232,14 +237,14 @@
   (when-let [k (ssl-certificate-public-key)]
     {"Public-Key-Pins" (format "pin-sha256=\"base64==%s\"; max-age=31536000" k)}))
 
-(defn- security-headers [& {:keys [allow-iframes? marked-for-cache? allow-cache?]
-                            :or   {allow-iframes? false, marked-for-cache? false, allow-cache? false}}]
+(defn- security-headers [& {:keys [allow-iframes? private-cache? allow-cache?]
+                            :or   {allow-iframes? false, private-cache? false, allow-cache? false}}]
   (merge
-   (if allow-cache?
-     (cache-far-future-headers)
-     (if marked-for-cache?
-       (cache-marked-api-headers)
-       (cache-prevention-headers)))
+    (if private-cache?
+      (cache-private-headers)
+      (if allow-cache?
+        (cache-far-future-headers)
+        (cache-prevention-headers)))
    strict-transport-security-header
    content-security-policy-header
    #_(public-key-pins-header)
@@ -260,7 +265,7 @@
     (let [response (handler request)]
       ;; add security headers to all responses, but allow iframes on public & embed responses
       (update response :headers merge (security-headers :allow-iframes? ((some-fn public? embed?) request)
-                                                        :marked-for-cache? (cacheable? request)
+                                                        :private-cache? (private-cacheable? request)
                                                         :allow-cache?   (cacheable? request))))))
 
 (defn add-content-type
