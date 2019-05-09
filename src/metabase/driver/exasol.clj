@@ -39,12 +39,14 @@
    (keyword "TIMESTAMP WITH LOCAL TIME ZONE") :type/DateTime})
 
 
-(defn- connection-details->spec [{:keys [host port schema], :as opts}]
+(defn- connection-details->spec [{:keys [host port schema querytimeout], :as opts}]
     ; :or   {host "localhost", port 8563, db ""}
     ; :as   details}]
   (-> (merge {:classname   "com.exasol.jdbc.EXADriver"
               :subprotocol "exa"
               :subname     (str host ":" port)
+              :querytimeout querytimeout
+              :encryption 0
               :schema schema}
              (dissoc opts :host :port :dbname :db :ssl))
       (sql/handle-additional-options opts)))
@@ -117,7 +119,11 @@
                                                            {:name         "password"
                                                             :display-name "Database password"
                                                             :type         :password
-                                                            :placeholder  "exasol"}]))
+                                                            :placeholder  "exasol"}
+                                                           {:name         "querytimeout"
+                                                            :display-name "Query timeout"
+                                                            :type         :integer
+                                                            :default      300}]))
                          :current-db-time   (driver/make-current-db-time-fn exasol-db-time-query exasol-date-formatters)
 ;          :features                          (constantly (set/union #{:set-timezone
 ;                                                                      :basic-aggregations
