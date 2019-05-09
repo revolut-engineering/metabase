@@ -123,7 +123,7 @@
                                                            {:name         "querytimeout"
                                                             :display-name "Query timeout"
                                                             :type         :integer
-                                                            :default      300}]))
+                                                            :default      900}]))
                          :current-db-time   (driver/make-current-db-time-fn exasol-db-time-query exasol-date-formatters)
 ;          :features                          (constantly (set/union #{:set-timezone
 ;                                                                      :basic-aggregations
