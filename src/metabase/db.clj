@@ -70,13 +70,13 @@
       ;; If someone is using Postgres and specifies `ssl=true` they might need to specify `sslmode=require`. Let's let
       ;; them know about that to make their lives a little easier. See https://github.com/metabase/metabase/issues/8908
       ;; for more details.
-      (when (and (= (:type <>) :postgres)
-                 (= (:ssl <>) "true")
-                 (not (:sslmode <>)))
-        (log/warn (trs "Warning: Postgres connection string with `ssl=true` detected.")
-                  (trs "You may need to add `?sslmode=require` to your application DB connection string.")
-                  (trs "If Metabase fails to launch, please add it and try again.")
-                  (trs "See https://github.com/metabase/metabase/issues/8908 for more details."))))))
+             (when (and (= (:type <>) :postgres)
+                        (= (:ssl <>) "true")
+                        (not (:sslmode <>)))
+               (log/warn (trs "Warning: Postgres connection string with `ssl=true` detected.")
+                         (trs "You may need to add `?sslmode=require` to your application DB connection string.")
+                         (trs "If Metabase fails to launch, please add it and try again.")
+                         (trs "See https://github.com/metabase/metabase/issues/8908 for more details."))))))
 
 (def ^:private connection-string-details
   (delay (when-let [uri (config/config-str :mb-db-connection-uri)]
@@ -171,14 +171,14 @@
   chance the lock will end up clearing up so we can run migrations normally."
   [^Liquibase liquibase]
   (u/auto-retry 5
-    (when (migration-lock-exists? liquibase)
-      (Thread/sleep 2000)
-      (throw
-       (LockException.
-        (str
-         (trs "Database has migration lock; cannot run migrations.")
-         " "
-         (trs "You can force-release these locks by running `java -jar metabase.jar migrate release-locks`.")))))))
+                (when (migration-lock-exists? liquibase)
+                  (Thread/sleep 2000)
+                  (throw
+                   (LockException.
+                    (str
+                     (trs "Database has migration lock; cannot run migrations.")
+                     " "
+                     (trs "You can force-release these locks by running `java -jar metabase.jar migrate release-locks`.")))))))
 
 (defn- migrate-up-if-needed!
   "Run any unrun `liquibase` migrations, if needed."
@@ -333,26 +333,26 @@
   [{:keys [subprotocol subname classname minimum-pool-size idle-connection-test-period excess-timeout]
     :or   {minimum-pool-size           3
            idle-connection-test-period 0
-           excess-timeout              (* 30 60)}
+           excess-timeout              (* 15 60)}
     :as   spec}]
   {:datasource (doto (ComboPooledDataSource.)
                  (.setDriverClass                  classname)
                  (.setJdbcUrl                      (str "jdbc:" subprotocol ":" subname))
                  (.setMaxIdleTimeExcessConnections excess-timeout)
-                 (.setMaxIdleTime                  (* 3 60 60))
+                 (.setMaxIdleTime                  (* 15 60))
                  (.setInitialPoolSize              3)
                  (.setMinPoolSize                  minimum-pool-size)
-                 (.setMaxPoolSize                  15)
+                 (.setMaxPoolSize                  10)
                  (.setIdleConnectionTestPeriod     idle-connection-test-period)
                  (.setTestConnectionOnCheckin      false)
                  (.setTestConnectionOnCheckout     false)
                  (.setPreferredTestQuery           nil)
                  (.setProperties                   (u/prog1 (Properties.)
-                                                     (doseq [[k v] (dissoc spec :classname :subprotocol :subname
-                                                                                :naming :delimiters :alias-delimiter
-                                                                                :excess-timeout :minimum-pool-size
-                                                                                :idle-connection-test-period)]
-                                                       (.setProperty <> (name k) (str v))))))})
+                                                            (doseq [[k v] (dissoc spec :classname :subprotocol :subname
+                                                                                  :naming :delimiters :alias-delimiter
+                                                                                  :excess-timeout :minimum-pool-size
+                                                                                  :idle-connection-test-period)]
+                                                              (.setProperty <> (name k) (str v))))))})
 
 (defn- create-connection-pool! [spec]
   (db/set-default-quoting-style! (case (db-type)
@@ -402,7 +402,7 @@
    (assert (binding [*allow-potentailly-unsafe-connections* true]
              (require 'metabase.driver)
              ((resolve 'metabase.driver/can-connect-with-details?) engine details))
-     (format "Unable to connect to Metabase %s DB." (name engine)))
+           (format "Unable to connect to Metabase %s DB." (name engine)))
    (log/info (trs "Verify Database Connection ... ") (u/emoji "✅"))))
 
 
@@ -444,7 +444,7 @@
     ;; second time; this time, it will either run into the lock, or see that there are no migrations to run in the
     ;; first place, and launch normally.
     (u/auto-retry 1
-      (migrate! db-details :up))
+                  (migrate! db-details :up))
     (print-migrations-and-quit! db-details))
   (log/info (trs "Database Migrations Current ... ") (u/emoji "✅")))
 
@@ -484,7 +484,7 @@
        :active true)"
   [[source-entity fk] [dest-entity pk]]
   {:left-join [(db/resolve-model dest-entity) [:= (db/qualify source-entity fk)
-                                                  (db/qualify dest-entity pk)]]})
+                                               (db/qualify dest-entity pk)]]})
 
 
 (defn- type-keyword->descendants
