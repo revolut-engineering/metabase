@@ -182,7 +182,7 @@
 (defn- cache-private-headers
   "Headers that tell browsers to cache an api response in private."
   []
-  {"Cache-Control" "private, max-age=86400, must-revalidate, proxy-revalidate"})
+  {"Cache-Control" "private, max-age=900, must-revalidate, proxy-revalidate"})
 
 (defn- cache-far-future-headers
   "Headers that tell browsers to cache a static resource for a long time."

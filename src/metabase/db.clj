@@ -332,8 +332,8 @@
   "Create a C3P0 connection pool for the given database `spec`."
   [{:keys [subprotocol subname classname minimum-pool-size idle-connection-test-period excess-timeout]
     :or   {minimum-pool-size           3
-           idle-connection-test-period 0
-           excess-timeout              (* 15 60)}
+           idle-connection-test-period 15
+           excess-timeout              (* 5 60)}
     :as   spec}]
   {:datasource (doto (ComboPooledDataSource.)
                  (.setDriverClass                  classname)
@@ -344,9 +344,9 @@
                  (.setMinPoolSize                  minimum-pool-size)
                  (.setMaxPoolSize                  10)
                  (.setIdleConnectionTestPeriod     idle-connection-test-period)
-                 (.setTestConnectionOnCheckin      false)
+                 (.setTestConnectionOnCheckin      true)
                  (.setTestConnectionOnCheckout     false)
-                 (.setPreferredTestQuery           nil)
+                 (.setPreferredTestQuery           "SELECT 1")
                  (.setProperties                   (u/prog1 (Properties.)
                                                             (doseq [[k v] (dissoc spec :classname :subprotocol :subname
                                                                                   :naming :delimiters :alias-delimiter
