@@ -43,13 +43,13 @@
   "Can the ring request be permanently cached?"
   [{:keys [uri query-string]}]
   ;; match requests that are js/css and have a cache-busting query string
-  (and query-string (re-matches #"^/app/dist/.*\.(js|css)$" uri)))
+  (or (and query-string (re-matches #"^/app/dist/.*\.(js|css)$" uri)) (str/includes? uri "/app/assets/geojson")))
 
 (defn- private-cacheable?
   "Can the ring request be privately cached?"
   [{:keys [uri query-string]}]
   ;; match requests that are js/css and have a cache-busting query string
-  (and query-string (str/includes? uri "/api/database")))
+  (or (and query-string (str/includes? uri "/api/database")) (re-matches #"^/api/database/\d+/metadata$" uri)))
 
 ;;; ------------------------------------------- AUTH & SESSION MANAGEMENT --------------------------------------------
 

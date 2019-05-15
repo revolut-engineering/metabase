@@ -333,13 +333,13 @@
   [{:keys [subprotocol subname classname minimum-pool-size idle-connection-test-period excess-timeout]
     :or   {minimum-pool-size           3
            idle-connection-test-period 5
-           excess-timeout              (* 5 60)}
+           excess-timeout              (* 1 60)}
     :as   spec}]
   {:datasource (doto (ComboPooledDataSource.)
                  (.setDriverClass                  classname)
                  (.setJdbcUrl                      (str "jdbc:" subprotocol ":" subname))
                  (.setMaxIdleTimeExcessConnections excess-timeout)
-                 (.setMaxIdleTime                  (* 10 60))
+                 (.setMaxIdleTime                  (* 2 60))
                  (.setInitialPoolSize              3)
                  (.setMinPoolSize                  minimum-pool-size)
                  (.setMaxPoolSize                  10)
