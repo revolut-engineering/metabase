@@ -13,6 +13,7 @@
             [metabase.db.spec :as dbspec]
             [metabase.util.i18n :refer [trs]]
             [ring.util.codec :as codec]
+            [clojure.string :as str]
             [toucan.db :as db])
   (:import com.mchange.v2.c3p0.ComboPooledDataSource
            java.io.StringWriter
@@ -332,24 +333,22 @@
   "Create a C3P0 connection pool for the given database `spec`."
   [{:keys [subprotocol subname classname minimum-pool-size idle-connection-test-period excess-timeout]
     :or   {minimum-pool-size           3
-           idle-connection-test-period 5
-           excess-timeout              (* 1 60)}
+           idle-connection-test-period 30
+           excess-timeout              (* 30 60)}
     :as   spec}]
   {:datasource (doto (ComboPooledDataSource.)
                  (.setDriverClass                  classname)
                  (.setJdbcUrl                      (str "jdbc:" subprotocol ":" subname))
                  (.setMaxIdleTimeExcessConnections excess-timeout)
-                 (.setMaxIdleTime                  (* 2 60))
+                 (.setMaxIdleTime                  (* 3 60 60))
                  (.setInitialPoolSize              3)
                  (.setMinPoolSize                  minimum-pool-size)
                  (.setMaxPoolSize                  10)
-                 (.setAcquireIncrement             1)
-                 (.setNumHelperThreads             30)
+                 (.setNumHelperThreads             (if (str/includes? classname "exasol") 30 3))
                  (.setIdleConnectionTestPeriod     idle-connection-test-period)
-                 (.setTestConnectionOnCheckin      true)
+                 (.setTestConnectionOnCheckin      false)
                  (.setTestConnectionOnCheckout     false)
-                 (.setPreferredTestQuery           "SELECT 1")
-                 (.setMaxAdministrativeTaskTime    (* 15 60))
+                 (.setPreferredTestQuery           nil)
                  (.setProperties                   (u/prog1 (Properties.)
                                                             (doseq [[k v] (dissoc spec :classname :subprotocol :subname
                                                                                   :naming :delimiters :alias-delimiter
