@@ -333,18 +333,19 @@
   "Create a C3P0 connection pool for the given database `spec`."
   [{:keys [subprotocol subname classname minimum-pool-size idle-connection-test-period excess-timeout]
     :or   {minimum-pool-size           3
-           idle-connection-test-period 30
+           idle-connection-test-period 0
            excess-timeout              (* 30 60)}
     :as   spec}]
   {:datasource (doto (ComboPooledDataSource.)
                  (.setDriverClass                  classname)
                  (.setJdbcUrl                      (str "jdbc:" subprotocol ":" subname))
                  (.setMaxIdleTimeExcessConnections excess-timeout)
-                 (.setMaxIdleTime                  (* 3 60 60))
+                 (.setMaxIdleTime                  (* 60 60))
                  (.setInitialPoolSize              3)
                  (.setMinPoolSize                  minimum-pool-size)
-                 (.setMaxPoolSize                  10)
-                 (.setNumHelperThreads             (if (str/includes? classname "exasol") 30 3))
+                 (.setMaxPoolSize                  (if (str/includes? subprotocol "exa") 10 15))
+                 (.setAcquireIncrement             1)
+                 (.setNumHelperThreads             (if (str/includes? subprotocol "exa") 10 5))
                  (.setIdleConnectionTestPeriod     idle-connection-test-period)
                  (.setTestConnectionOnCheckin      false)
                  (.setTestConnectionOnCheckout     false)

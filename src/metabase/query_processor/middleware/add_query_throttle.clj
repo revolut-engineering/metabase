@@ -7,7 +7,7 @@
 
 (def ^:private calculate-max-queries-from-max-threads
   (let [max-threads (or (config/config-int :mb-jetty-maxthreads) 50)]
-    (int (Math/ceil (/ max-threads 2)))))
+    (int (Math/ceil (/ max-threads 4)))))
 
 (defn- ^Semaphore create-query-semaphore []
   (let [total-concurrent-queries (or (config/config-int :mb-max-concurrent-queries)
