@@ -637,6 +637,7 @@
         [columns & rows] (cancellable-run-query connection sql params
                                                 {:identifiers    identity
                                                  :as-arrays?     true
+                                                 :timeout        900
                                                  :read-columns   (read-columns-with-date-handling timezone)
                                                  :set-parameters (set-parameters-with-timezone timezone)})]
     {:rows    (or rows [])
