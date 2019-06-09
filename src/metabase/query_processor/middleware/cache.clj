@@ -103,10 +103,19 @@
       (save-results-if-successful! query-hash results))
     results))
 
+(defn read-file [f]
+  (-> (slurp f)
+      (clojure.string/split-lines)))
+
+(def long-running-questions (read-file "/tmp/long-running-questions.txt"))
+
 (defn- run-query-with-cache [qp {:keys [cache-ttl], :as query}]
   ;; TODO - Query should already have a `info.hash`, shouldn't it?
   (let [query-hash (qputil/query-hash query)]
-    (or (cached-results query-hash cache-ttl)
+    (or (if (some #(= (get-in query [:info :card-id]) %) long-running-questions)
+          (cached-results query-hash 28800)
+          (cached-results query-hash (max cache-ttl 290)))
+          ; (cached-results query-hash cache-ttl))
         (run-query-and-save-results-if-successful! query-hash qp query))))
 
 (defn maybe-return-cached-results

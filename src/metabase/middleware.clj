@@ -48,8 +48,9 @@
 (defn- private-cacheable?
   "Can the ring request be privately cached?"
   [{:keys [uri query-string]}]
-  ;; match requests that are js/css and have a cache-busting query string
-  (or (and query-string (str/includes? uri "/api/database")) (re-matches #"^/api/database/\d+/metadata$" uri)))
+  ;; cache /api requests in 5 minutes
+  (or (and query-string (str/includes? uri "/api/database"))
+      (re-matches #"^/api/database/\d+/metadata$" uri)))
 
 ;;; ------------------------------------------- AUTH & SESSION MANAGEMENT --------------------------------------------
 
@@ -182,7 +183,7 @@
 (defn- cache-private-headers
   "Headers that tell browsers to cache an api response in private."
   []
-  {"Cache-Control" "private, max-age=900, must-revalidate, proxy-revalidate"})
+  {"Cache-Control" "private, max-age=600, must-revalidate, proxy-revalidate"})
 
 (defn- cache-far-future-headers
   "Headers that tell browsers to cache a static resource for a long time."
@@ -240,11 +241,10 @@
 (defn- security-headers [& {:keys [allow-iframes? private-cache? allow-cache?]
                             :or   {allow-iframes? false, private-cache? false, allow-cache? false}}]
   (merge
-    (if private-cache?
-      (cache-private-headers)
-      (if allow-cache?
-        (cache-far-future-headers)
-        (cache-prevention-headers)))
+    (cond
+      private-cache? (cache-private-headers)
+      allow-cache? (cache-far-future-headers)
+      :else (cache-prevention-headers))
    strict-transport-security-header
    content-security-policy-header
    #_(public-key-pins-header)
