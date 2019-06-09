@@ -20,7 +20,7 @@ export type Options = {
 };
 
 const ONE_SECOND = 1000;
-const MAX_RETRIES = 10;
+const MAX_RETRIES = 2;
 
 export type Data = {
   [key: string]: any,
