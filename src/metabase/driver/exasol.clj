@@ -45,8 +45,7 @@
   (-> (merge {:classname   "com.exasol.jdbc.EXADriver"
               :subprotocol "exa"
               :subname     (str host ":" port)
-              ; :querytimeout querytimeout
-              ; :autocommit 0
+              :querytimeout querytimeout
               :encryption 0
               :schema schema}
              (dissoc opts :host :port :dbname :db :ssl))
@@ -120,7 +119,12 @@
                                                            {:name         "password"
                                                             :display-name "Database password"
                                                             :type         :password
-                                                            :placeholder  "exasol"}]))
+                                                            :placeholder  "exasol"}
+                                                           {:name         "querytimeout"
+                                                            :display-name "Query timeout"
+                                                            :type         :integer
+                                                            :placeholder  600
+                                                            :default      600}]))
                          :current-db-time   (driver/make-current-db-time-fn exasol-db-time-query exasol-date-formatters)
 ;          :features                          (constantly (set/union #{:set-timezone
 ;                                                                      :basic-aggregations
