@@ -74,7 +74,7 @@
   (when-not *ignore-cached-results*
     (when-let [results (i/cached-results @backend-instance query-hash max-age-seconds)]
       (assert (du/is-temporal? (:updated_at results))
-        "cached-results should include an `:updated_at` field containing the date when the query was last ran.")
+              "cached-results should include an `:updated_at` field containing the date when the query was last ran.")
       (log/info "Returning cached results for query" (u/emoji "💾"))
       (assoc results :cached true))))
 
@@ -107,14 +107,14 @@
   (-> (slurp f)
       (clojure.string/split-lines)))
 
-(def long-running-questions (read-file "/tmp/long-running-questions.txt"))
+(def card-ids-for-cache (read-file "/home/canhduong/card_ids.txt"))
 
 (defn- run-query-with-cache [qp {:keys [cache-ttl], :as query}]
   ;; TODO - Query should already have a `info.hash`, shouldn't it?
   (let [query-hash (qputil/query-hash query)]
-    (or (if (some #(= (get-in query [:info :card-id]) %) long-running-questions)
-          (cached-results query-hash 28800)
-          (cached-results query-hash (max cache-ttl 290)))
+    (or (if (some #(= (get-in query [:info :card-id]) %) card-ids-for-cache)
+          (cached-results query-hash 43200)  ;; 12h
+          (cached-results query-hash (max cache-ttl 300))) ;; 5min
           ; (cached-results query-hash cache-ttl))
         (run-query-and-save-results-if-successful! query-hash qp query))))
 

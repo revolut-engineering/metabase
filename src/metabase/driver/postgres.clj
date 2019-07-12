@@ -239,28 +239,29 @@
           :column->special-type      (u/drop-first-arg column->special-type)
           :connection-details->spec  (u/drop-first-arg connection-details->spec)
           :date                      (u/drop-first-arg date)
-          :set-timezone-sql          (constantly "SET SESSION TIMEZONE TO %s;")
+          ; :set-timezone-sql          (constantly "SET SESSION TIMEZONE TO %s;")
+          :set-timezone-sql          (constantly "set statement_timeout to 600000; commit;")
           :string-length-fn          (u/drop-first-arg string-length-fn)
           :unix-timestamp->timestamp (u/drop-first-arg unix-timestamp->timestamp)}))
 
 (u/strict-extend PostgresDriver
-  driver/IDriver
-  (merge (sql/IDriverSQLDefaultsMixin)
-         {:current-db-time                   (driver/make-current-db-time-fn pg-db-time-query pg-date-formatters)
-          :date-interval                     (u/drop-first-arg date-interval)
-          :describe-table                    describe-table
-          :details-fields                    (constantly (ssh/with-tunnel-config
-                                                           [driver/default-host-details
-                                                            (assoc driver/default-port-details :default 5432)
-                                                            driver/default-dbname-details
-                                                            driver/default-user-details
-                                                            driver/default-password-details
-                                                            driver/default-ssl-details
-                                                            (assoc driver/default-additional-options-details
-                                                              :placeholder "prepareThreshold=0")]))
-          :humanize-connection-error-message (u/drop-first-arg humanize-connection-error-message)})
+                 driver/IDriver
+                 (merge (sql/IDriverSQLDefaultsMixin)
+                        {:current-db-time                   (driver/make-current-db-time-fn pg-db-time-query pg-date-formatters)
+                         :date-interval                     (u/drop-first-arg date-interval)
+                         :describe-table                    describe-table
+                         :details-fields                    (constantly (ssh/with-tunnel-config
+                                                                          [driver/default-host-details
+                                                                           (assoc driver/default-port-details :default 5432)
+                                                                           driver/default-dbname-details
+                                                                           driver/default-user-details
+                                                                           driver/default-password-details
+                                                                           driver/default-ssl-details
+                                                                           (assoc driver/default-additional-options-details
+                                                                                  :placeholder "prepareThreshold=0")]))
+                         :humanize-connection-error-message (u/drop-first-arg humanize-connection-error-message)})
 
-  sql/ISQLDriver PostgresISQLDriverMixin)
+                 sql/ISQLDriver PostgresISQLDriverMixin)
 
 (defn -init-driver
   "Register the PostgreSQL driver"
