@@ -15,7 +15,7 @@
   ;; I don't know if these numbers make sense, but my thinking is we want to enable (somewhat) long-running queries on
   ;; prod but for test and dev purposes we want to fail faster because it usually means I broke something in the QP
   ;; code
-  (con
+  (cond
     config/is-prod? (u/minutes->ms 3)
     config/is-test? (u/seconds->ms 3)
     config/is-dev?  (u/minutes->ms 3)))
