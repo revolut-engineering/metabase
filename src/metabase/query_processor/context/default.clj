@@ -16,8 +16,8 @@
   ;; prod but for test and dev purposes we want to fail faster because it usually means I broke something in the QP
   ;; code
   (cond
-    config/is-prod? (u/minutes->ms 20)
-    config/is-test? (u/seconds->ms 30)
+    config/is-prod? (u/minutes->ms 3)
+    config/is-test? (u/seconds->ms 3)
     config/is-dev?  (u/minutes->ms 3)))
 
 (defn default-rff
