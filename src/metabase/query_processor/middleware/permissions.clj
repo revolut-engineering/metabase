@@ -50,7 +50,9 @@
   (when *current-user-id*
     (log/tracef "Checking query permissions. Current user perms set = %s" (pr-str @*current-user-permissions-set*))
     (if card-id
-      (and (check-card-read-perms card-id) (check-ad-hoc-query-perms outer-query))
+      (do
+        (check-card-read-perms card-id)
+        (check-ad-hoc-query-perms outer-query))
       (check-ad-hoc-query-perms outer-query))))
 
 (defn check-query-permissions
