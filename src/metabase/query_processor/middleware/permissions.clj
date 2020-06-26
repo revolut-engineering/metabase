@@ -44,13 +44,22 @@
     (doseq [{:keys [dataset_query]} (qp.resolve-referenced/tags-referenced-cards outer-query)]
       (check-query-permissions* dataset_query))))
 
+(s/defn ^:private check-data-access-perms
+  [outer-query]
+  (let [required-perms (query-perms/perms-set outer-query, :throw-exceptions? true, :already-preprocessed? true)]
+    (log/tracef "Required data acscess perms: %s" (pr-str required-perms))
+    (when-not (perms/set-has-full-permissions-for-set? @*current-user-permissions-set* required-perms)
+      (throw (perms-exception required-perms)))))
+
 (s/defn ^:private check-query-permissions*
   "Check that User with `user-id` has permissions to run `query`, or throw an exception."
   [{{:keys [card-id]} :info, :as outer-query} :- su/Map]
   (when *current-user-id*
     (log/tracef "Checking query permissions. Current user perms set = %s" (pr-str @*current-user-permissions-set*))
     (if card-id
-      (check-card-read-perms card-id)
+      (do
+        (check-card-read-perms card-id)
+        (check-data-access-perms (assoc-in outer-query [:type] :view)))
       (check-ad-hoc-query-perms outer-query))))
 
 (defn check-query-permissions
