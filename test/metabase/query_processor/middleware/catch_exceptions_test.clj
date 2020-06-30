@@ -131,13 +131,6 @@
   (data/with-temp-copy-of-db
     (perms/revoke-permissions! (group/all-users) (data/id))
     (perms/grant-permissions! (group/all-users) (data/id) "PUBLIC" (data/id :venues))
-    (testing (str "If someone doesn't have native query execution permissions, they shouldn't see the native version of "
-                  "the query in the error response")
-      (is (schema= {:native (s/eq nil), :preprocessed (s/pred map?), s/Any s/Any}
-                   (test-users/with-test-user :rasta
-                     (qp/process-userland-query
-                      (data/mbql-query venues {:fields [!month.id]}))))))
-
     (testing "They should see it if they have ad-hoc native query perms"
       (perms/grant-native-readwrite-permissions! (group/all-users) (data/id))
       (is (schema= {:native       (s/eq {:query  (str "SELECT parsedatetime(formatdatetime(\"PUBLIC\".\"VENUES\".\"ID\", 'yyyyMM'), 'yyyyMM') "
