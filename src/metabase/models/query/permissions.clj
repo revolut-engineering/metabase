@@ -138,7 +138,7 @@
     (empty? query)                   #{}
     (= (keyword query-type) :native) #{(perms/adhoc-native-query-path database)}
     (= (keyword query-type) :query)  (mbql-permissions-path-set query perms-opts)
-    (= (keyword query-type) :view #{(perms/all-schemas-path database)} ; => /database/id/schema
+    (= (keyword query-type) :view #{(perms/all-schemas-path database)}) ; => /database/id/schema
     :else                            (throw (Exception. (tru "Invalid query type: {0}" query-type)))))
 
 (defn perms-set
