@@ -213,7 +213,7 @@
       (is (schema= {:status   (s/eq :failed)
                     :class    (s/eq clojure.lang.ExceptionInfo)
                     :error    (s/eq "You do not have permissions to run this query.")
-                    :ex-data  {:required-permissions (s/eq #{(perms/table-query-path (data/id) "PUBLIC" (data/id :venues))})
+                    :ex-data  {:required-permissions (s/eq #{"/db/1/native/"})
                                :actual-permissions   (s/eq #{})
                                :permissions-error?   (s/eq true)
                                :type                 (s/eq error-type/missing-required-permissions)

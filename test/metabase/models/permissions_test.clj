@@ -141,7 +141,7 @@
 
 (deftest object-path-test
   (testing "valid paths"
-    (doseq [[expected args] {"/db/1/"                       [1]
+    (doseq [[expected args] {"/db/1/native"                       [1]
                              "/db/1/schema/public/"         [1 "public"]
                              "/db/1/schema/public/table/2/" [1 "public" 2]}]
       (testing (pr-str (cons 'perms/object-path args))
