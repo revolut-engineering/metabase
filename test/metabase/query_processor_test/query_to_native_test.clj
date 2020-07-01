@@ -56,13 +56,13 @@
                (mt/mbql-query venues)
                {:object-perms? true, :native-perms? true})))))
     (testing "If you don't have MBQL permissions for the original query it should throw an error"
-      (is (schema= {:error (s/eq "You do not have permissions to run this query.")
+      (is (schema= {:error (s/eq "You do not have database permissions to run this query.")
                     s/Any  s/Any}
                    (query->native-with-user-perms
                     (mt/mbql-query venues)
                     {:object-perms? false, :native-perms? false}))))
     (testing "If you don't have have native query execution permissions for the DB it should throw an error"
-      (is (= {:error                "You do not have permissions to run this query."
+      (is (= {:error                "You do not have database permissions to run this query."
               :required-permissions (perms/adhoc-native-query-path (mt/id))
               :actual-permissions   #{(perms/object-path (mt/id) "PUBLIC" (mt/id :venues))}
               :permissions-error?   true
