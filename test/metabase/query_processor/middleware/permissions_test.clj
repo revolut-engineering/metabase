@@ -30,7 +30,7 @@
   [query]
   (do-with-rasta (fn [] (check-perms query))))
 
-(def ^:private perms-error-msg #"^You do not have permissions to run this query\.")
+(def ^:private perms-error-msg #"^You do not have database permissions to run this query\.")
 
 (deftest native-query-perms-test
   (testing "Make sure the NATIVE query fails to run if current user doesn't have perms"
@@ -207,7 +207,7 @@
               api/*current-user-permissions-set* (delay #{})]
       (is (schema= {:status   (s/eq :failed)
                     :class    (s/eq clojure.lang.ExceptionInfo)
-                    :error    (s/eq "You do not have permissions to run this query.")
+                    :error    (s/eq "You do not have database permissions to run this query.")
                     :ex-data  {:required-permissions (s/eq #{"/db/1/native/"})
                                :actual-permissions   (s/eq #{})
                                :permissions-error?   (s/eq true)
