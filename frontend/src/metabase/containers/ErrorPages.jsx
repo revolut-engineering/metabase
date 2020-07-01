@@ -53,7 +53,7 @@ export const NotFound = () => (
 export const Unauthorized = () => (
   <ErrorPageWrapper>
     <EmptyState
-      title={t`Sorry, you don’t have permission to see that.`}
+      title={t`Sorry, you don't have permission to view the content of this collection.`}
       illustrationElement={<Icon name="key" size={100} />}
     />
   </ErrorPageWrapper>
