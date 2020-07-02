@@ -78,7 +78,7 @@
   (comp :channels (partial GET :channels.list, :exclude_archived true, :exclude_members true)))
 
 (def ^{:arglists '([& {:as args}])} channels-private-list
-  "Calls Slack api `channels.list` function and returns the list of available channels."
+  "Calls Slack api `conversations.list` function and returns the list of available private channels."
   (comp :channels (partial GET :conversations.list, :exclude_archived true, :types "private_channel")))
 
 (def ^{:arglists '([& {:as args}])} users-list
