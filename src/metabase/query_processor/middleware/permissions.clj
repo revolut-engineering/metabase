@@ -27,7 +27,7 @@
                       {:type error-type/missing-required-permissions})))))
 
 (defn- perms-exception [required-perms]
-  (ex-info (tru "You do not have permissions to run this query.")
+  (ex-info (tru "Sorry, you do not have permission to access this database.")
     {:type                 error-type/missing-required-permissions
      :required-permissions required-perms
      :actual-permissions   @*current-user-permissions-set*
