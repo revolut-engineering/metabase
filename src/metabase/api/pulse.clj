@@ -128,9 +128,11 @@
                  (try
                    (let [slack-channels (for [channel (slack/channels-list)]
                                           (str \# (:name channel)))
+                         slack-private-channels (for [channel (slack/channels-private-list)]
+                                                  (str \# (:name channel)))
                          slack-users    (for [user (slack/users-list)]
                                           (str \@ (:name user)))]
-                     (assoc-in chan-types [:slack :fields 0 :options] (concat slack-channels slack-users)))
+                     (assoc-in chan-types [:slack :fields 0 :options] (concat slack-channels slack-users slack-private-channels)))
                    (catch Throwable e
                      (assoc-in chan-types [:slack :error] (.getMessage e)))))}))
 
