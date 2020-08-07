@@ -30,7 +30,6 @@
   (ex-info (tru "Sorry, you do not have permission to access this database.")
     {:type                 error-type/missing-required-permissions
      :required-permissions required-perms
-     :actual-permissions   @*current-user-permissions-set*
      :permissions-error?   true}))
 
 (declare check-query-permissions*)
