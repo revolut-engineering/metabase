@@ -35,4 +35,6 @@
   "Can the ring request be privately cached?"
   [{:keys [uri query-string], :as request}]
   ;; cache /api/database requests
-  (re-matches #"^/api/database.*" uri))
+  (or
+   (re-matches #"^/api/database.*" uri))
+   (re-matches #"^/api/collection/root/items$" uri))
