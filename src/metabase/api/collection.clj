@@ -30,7 +30,7 @@
   [archived]
   {archived (s/maybe su/BooleanString)}
   (let [archived? (Boolean/parseBoolean archived)]
-    (as-> (db/select Collection :archived archived?
+    (as-> (db/select Collection :archived archived? :personal_owner_id nil
                      {:order-by [[:%lower.name :asc]]}) collections
       (filter mi/can-read? collections)
       ;; include Root Collection at beginning or results if archived isn't `true`

@@ -49,7 +49,7 @@
   {"Cache-Control" "private, max-age=86400, must-revalidate, proxy-revalidate"})
 
 (defn- cache-2h-headers
-  "Headers that tell browsers to cache /api/database endpoints for 2 hours"
+  "Headers that tell browsers to cache /api/database and /api/collection endpoints for 2 hours"
   []
   {"Cache-Control" "private, max-age=7200, must-revalidate, proxy-revalidate"})
 

@@ -64,7 +64,6 @@
     (testing "If you don't have have native query execution permissions for the DB it should throw an error"
       (is (= {:error                "Sorry, you do not have permission to access this database."
               :required-permissions (perms/adhoc-native-query-path (mt/id))
-              :actual-permissions   #{(perms/object-path (mt/id) "PUBLIC" (mt/id :venues))}
               :permissions-error?   true
               :type                 :missing-required-permissions}
              (query->native-with-user-perms
