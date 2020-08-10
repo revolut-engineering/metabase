@@ -37,7 +37,7 @@
   ;; cache /api/database and api/collection request
   (or
     (re-matches #"^/api/collection$" uri)
-    (re-matches #"^/api/database$" uri))
+    (re-matches #"^/api/database$" uri)))
 
 (defn cacheable-24h?
   "Can the ring request be privately cached?"
