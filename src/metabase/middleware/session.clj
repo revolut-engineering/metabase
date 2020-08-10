@@ -5,7 +5,9 @@
             [metabase
              [config :as config]
              [db :as mdb]]
-            [metabase.api.common :refer [*current-user* *current-user-id* *current-user-permissions-set* *is-superuser?*]]
+            [metabase.api.common :refer [*current-user* *current-user-id*
+                                         *current-user-permissions-set* *current-db-permissions-set*
+                                         *is-superuser?*]]
             [metabase.core.initialization-status :as init-status]
             [metabase.models
              [session :refer [Session]]
@@ -180,6 +182,7 @@
   (binding [*current-user-id*              current-user-id
             *is-superuser?*                (boolean superuser?)
             *current-user*                 (delay (find-user current-user-id))
+            *current-db-permissions-set*   (delay (some-> current-user-id user/db-permissions-set))
             *current-user-permissions-set* (delay (some-> current-user-id user/permissions-set))]
     (thunk)))
 
