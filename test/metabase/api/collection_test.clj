@@ -43,24 +43,18 @@
 
 ;; We should only see our own Personal Collections!
 (expect
-  ["Our analytics"
-   "Lucky Pigeon's Personal Collection"]
+  ["Our analytics"]
   (map :name ((user->client :lucky) :get 200 "collection")))
 
 ;; ...unless we are *admins*
 (expect
-  ["Our analytics"
-   "Crowberto Corv's Personal Collection"
-   "Lucky Pigeon's Personal Collection"
-   "Rasta Toucan's Personal Collection"
-   "Trash Bird's Personal Collection"]
+  ["Our analytics"]
   (map :name ((user->client :crowberto) :get 200 "collection")))
 
 ;; check that we don't see collections if we don't have permissions for them
 (expect
   ["Our analytics"
-   "Collection 1"
-   "Rasta Toucan's Personal Collection"]
+   "Collection 1"]
   (tu/with-non-admin-groups-no-root-collection-perms
     (tt/with-temp* [Collection [collection-1 {:name "Collection 1"}]
                     Collection [collection-2 {:name "Collection 2"}]]
@@ -70,7 +64,6 @@
 ;; check that we don't see collections if they're archived
 (expect
   ["Our analytics"
-   "Rasta Toucan's Personal Collection"
    "Regular Collection"]
   (tt/with-temp* [Collection [collection-1 {:name "Archived Collection", :archived true}]
                   Collection [collection-2 {:name "Regular Collection"}]]
