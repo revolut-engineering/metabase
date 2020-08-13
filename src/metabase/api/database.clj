@@ -54,7 +54,6 @@
 (defn- add-tables [dbs]
   (let [db-id->tables (group-by :db_id (filter mi/can-read? (db/select Table
                                                               :active true
-                                                              :dynamic_filter true
                                                               :db_id  [:in (map :id dbs)]
                                                               {:order-by [[:%lower.schema :asc]
                                                                           [:%lower.display_name :asc]]})))]
