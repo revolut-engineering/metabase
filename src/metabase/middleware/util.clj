@@ -45,5 +45,6 @@
   ;; cache /api/database/\d+/metadata and /api/collection/root/items requests
   (or
    (re-matches #"^/api/database\?include=tables$" (str uri "?" query-string))
+   (re-matches #"^/api/database\?saved=true$" (str uri "?" query-string))
    (re-matches #"^/api/collection/root/items$" uri)
-   (re-matches #"^/api/database/\d+/metadata$" uri)))
+   (re-matches #"^/api/database/\d+/.+" uri)))
