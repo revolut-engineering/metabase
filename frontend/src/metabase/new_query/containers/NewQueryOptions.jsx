@@ -28,7 +28,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-  // prefetchTables: () => Database.actions.fetchList(),
+  // prefetchTables: () => Database.actions.fetchList({ include: "tables" }),
   prefetchDatabases: () => Database.actions.fetchList({ saved: true }),
   push,
 };
