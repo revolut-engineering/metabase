@@ -31,7 +31,7 @@
         ;; GeoJSON proxy requests should also be cached
         (re-matches #"^/api/geojson/.*" uri))))
 
-(defn cacheable-2h?
+(defn cacheable-1h?
   "Can the ring request be privately cached?"
   [{:keys [uri query-string], :as request}]
   ;; cache /api/database and api/collection request

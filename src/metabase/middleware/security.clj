@@ -48,10 +48,10 @@
   []
   {"Cache-Control" "private, max-age=86400, must-revalidate, proxy-revalidate"})
 
-(defn- cache-2h-headers
-  "Headers that tell browsers to cache /api/database and /api/collection endpoints for 2 hours"
+(defn- cache-1h-headers
+  "Headers that tell browsers to cache /api/database and /api/collection endpoints for 1 hour"
   []
-  {"Cache-Control" "private, max-age=7200, must-revalidate, proxy-revalidate"})
+  {"Cache-Control" "private, max-age=3600, must-revalidate, proxy-revalidate"})
 
 (def ^:private ^:const strict-transport-security-header
   "Tell browsers to only access this resource over HTTPS for the next year (prevent MTM attacks). (This only applies if
@@ -101,15 +101,15 @@
 
 (defn security-headers
   "Fetch a map of security headers that should be added to a response based on the passed options."
-  [& {:keys [allow-iframes? allow-cache? allow-2h-cache? allow-24h-cache?]
-      :or   {allow-iframes? false, allow-cache? false, allow-2h-cache? false allow-24h-cache? false}}]
+  [& {:keys [allow-iframes? allow-cache? allow-1h-cache? allow-24h-cache?]
+      :or   {allow-iframes? false, allow-cache? false, allow-1h-cache? false allow-24h-cache? false}}]
   (merge
    (if allow-cache?
      (cache-far-future-headers)
      (if allow-24h-cache?
        (cache-24h-headers)
-       (if allow-2h-cache?
-        (cache-2h-headers)
+       (if allow-1h-cache?
+        (cache-1h-headers)
         (cache-prevention-headers))))
    strict-transport-security-header
    content-security-policy-header
@@ -127,7 +127,7 @@
   (update response :headers merge (security-headers
                                    :allow-iframes? ((some-fn middleware.u/public? middleware.u/embed?) request)
                                    :allow-cache?   (middleware.u/cacheable? request)
-                                   :allow-2h-cache? (middleware.u/cacheable-2h? request)
+                                   :allow-1h-cache? (middleware.u/cacheable-1h? request)
                                    :allow-24h-cache? (middleware.u/cacheable-24h? request))))
 
 (defn add-security-headers
