@@ -71,31 +71,70 @@
 
 (defn POST
   "Make a POST request to the Slack API."
-  (partial do-slack-request http/post :form-params))
+  [endpoint body]
+  (do-slack-request http/post endpoint {:form-params body}))
 
-(def ^{:arglists '([& {:as args}])} channels-list
-  "Calls Slack api `channels.list` function and returns the list of available channels."
-  (comp :channels (partial GET :channels.list, :exclude_archived true, :exclude_members true)))
+(defn- next-cursor
+  "Get a cursor for the next page of results in a Slack API response, if one exists."
+  [response]
+  (not-empty (get-in response [:response_metadata :next_cursor])))
 
-(def ^{:arglists '([& {:as args}])} channels-private-list
-  "Calls Slack api `conversations.list` function and returns the list of available private channels."
-  (comp :channels (partial GET :conversations.list, :exclude_archived true, :types "private_channel")))
+(def ^:private max-list-results
+  "Absolute maximum number of results to fetch from Slack API list endpoints. To prevent unbounded pagination of
+  results. Don't set this too low -- some orgs have many thousands of channels (see #12978)"
+  10000)
 
-(def ^{:arglists '([& {:as args}])} users-list
-  "Calls Slack api `users.list` function and returns the list of available users."
-  (comp :members (partial GET :users.list)))
+(defn- paged-list-request
+  "Make a GET request to a Slack API list `endpoint`, returning a sequence of objects returned by the top level
+  `results-key` in the response. If additional pages of results exist, fetches those lazily, up to a total of
+  `max-list-results`."
+  [endpoint results-key params]
+  ;; use default limit (page size) of 1000 instead of 100 so we don't end up making a hundred API requests for orgs
+  ;; with a huge number of channels or users.
+  (let [default-params {:limit 1000}
+        response       (m/mapply GET endpoint (merge default-params params))]
+    (when (seq response)
+      (take
+       max-list-results
+       (concat
+        (get response results-key)
+        (when-let [next-cursor (next-cursor response)]
+          (lazy-seq
+           (paged-list-request endpoint results-key (assoc params :cursor next-cursor)))))))))
 
-(def ^:private ^String channel-missing-msg
-  (str "Slack channel named `metabase_files` is missing! Please create the channel in order to complete "
-       "the Slack integration. The channel is used for storing graphs that are included in pulses and "
-       "MetaBot answers."))
+(defn conversations-list
+  "Calls Slack API `conversations.list` and returns list of available 'conversations' (channels and direct messages). By
+  default only fetches channels."
+  [& {:as query-parameters}]
+  (let [params (merge {:exclude_archived true, :types "public_channel,private_channel"} query-parameters)]
+    (paged-list-request "conversations.list" :channels params)))
 
-(defn- maybe-get-files-channel
-  "Return the `metabase_files channel (as a map) if it exists."
-  []
-  (some (fn [channel] (when (= (:name channel) files-channel-name)
-                        channel))
-        (channels-list :exclude_archived false)))
+(defn- channel-with-name
+  "Return a Slack channel with `channel-name` (as a map) if it exists."
+  [channel-name]
+  (some (fn [channel]
+          (when (= (:name channel) channel-name)
+            channel))
+        (conversations-list)))
+
+(s/defn valid-token?
+  "Check whether a Slack token is valid by checking whether we can call `conversations.list` with it."
+  [token :- su/NonBlankString]
+  (try
+    (boolean (take 1 (conversations-list :limit 1, :token token)))
+    (catch Throwable e
+      (if (= (:error-code (ex-data e)) "invalid_auth")
+        false
+        (throw e)))))
+
+(defn users-list
+  "Calls Slack API `users.list` endpoint and returns the list of available users."
+  [& {:as query-parameters}]
+  (->> (paged-list-request "users.list" :members query-parameters)
+       ;; filter out deleted users and bots. At the time of this writing there's no way to do this in the Slack API
+       ;; itself so we need to do it after the fact.
+       (filter (complement :deleted))
+       (filter (complement :is_bot))))
 
 (defn- files-channel* []
   (or (channel-with-name files-channel-name)
