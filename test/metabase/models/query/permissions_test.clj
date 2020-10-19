@@ -147,7 +147,7 @@
 (tt/expect-with-temp [Database [db]
                       Table    [table {:db_id (u/get-id db), :schema nil}]
                       Field    [_     {:table_id (u/get-id table)}]]
-  #{"/db/139/native/"}
+  #{"/db/160/native/"}
   (do
     (perms/revoke-permissions! (perms-group/all-users) db)
     (binding [*current-user-permissions-set* (atom nil)
