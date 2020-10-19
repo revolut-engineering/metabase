@@ -42,7 +42,6 @@
     (as-> (db/select Collection
             :archived archived?
             :namespace namespace
-            :personal_owner_id nil
             {:order-by [[:%lower.name :asc]]}) collections
       (filter mi/can-read? collections)
       ;; include Root Collection at beginning or results if archived isn't `true`
