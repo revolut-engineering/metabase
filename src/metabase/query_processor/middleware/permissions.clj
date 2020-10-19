@@ -1,7 +1,7 @@
 (ns metabase.query-processor.middleware.permissions
   "Middleware for checking that the current user has permissions to run the current query."
   (:require [clojure.tools.logging :as log]
-            [metabase.api.common :refer [*current-user-id* *current-user-permissions-set*]]
+            [metabase.api.common :refer [*current-user-id* *current-user-permissions-set* *current-db-permissions-set*]]
             [metabase.models
              [card :refer [Card]]
              [interface :as mi]
@@ -47,7 +47,7 @@
   [outer-query]
   (let [required-perms (query-perms/perms-set outer-query, :throw-exceptions? true, :already-preprocessed? true)]
     (log/tracef "Required data acscess perms: %s" (pr-str required-perms))
-    (when-not (perms/set-has-full-permissions-for-set? @*current-user-permissions-set* required-perms)
+    (when-not (perms/set-has-full-permissions-for-set? @*current-db-permissions-set* required-perms)
       (throw (perms-exception required-perms)))))
 
 (s/defn ^:private check-query-permissions*

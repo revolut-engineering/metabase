@@ -106,10 +106,10 @@
   (merge
    (if allow-cache?
      (cache-far-future-headers)
-     (if allow-2h-cache?
-       (cache-2h-headers)
-       (if allow-24h-cache?
-        (cache-24h-headers)
+     (if allow-24h-cache?
+       (cache-24h-headers)
+       (if allow-2h-cache?
+        (cache-2h-headers)
         (cache-prevention-headers))))
    strict-transport-security-header
    content-security-policy-header
