@@ -34,7 +34,5 @@
 (defn private-cacheable?
   "Can the ring request be privately cached?"
   [{:keys [uri query-string], :as request}]
-  ;; cache /api/database?include=tables and api/database/[0-9]+/metadata requests
-  (or
-   (re-matches #"^/api/database\?include=tables$" (str uri "?" query-string))
-   (re-matches #"^/api/database/\d+/metadata$" uri)))
+  ;; cache /api/database?include=tables requests
+  (re-matches #"^/api/database\?include=tables$" (str uri "?" query-string)))
