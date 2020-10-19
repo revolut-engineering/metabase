@@ -44,9 +44,9 @@
    {"Cache-Control" "public, max-age=31536000"})
 
 (defn- cache-table-metadata-headers
-  "Headers that tell browsers to cache /api/database?include=tables for 8 hours"
+  "Headers that tell browsers to cache /api/database endpoints for 24 hours"
   []
-  {"Cache-Control" "private, max-age=28800, must-revalidate, proxy-revalidate"})
+  {"Cache-Control" "private, max-age=86400, must-revalidate, proxy-revalidate"})
 
 (def ^:private ^:const strict-transport-security-header
   "Tell browsers to only access this resource over HTTPS for the next year (prevent MTM attacks). (This only applies if
