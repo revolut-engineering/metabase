@@ -209,7 +209,6 @@
                     :class    (s/eq clojure.lang.ExceptionInfo)
                     :error    (s/eq "Sorry, you do not have permission to access this database.")
                     :ex-data  {:required-permissions (s/eq #{"/db/1/native/"})
-                               :actual-permissions   (s/eq #{})
                                :permissions-error?   (s/eq true)
                                :type                 (s/eq error-type/missing-required-permissions)
                                s/Keyword             s/Any}
