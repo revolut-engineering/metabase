@@ -30,3 +30,11 @@
              (re-matches #"^/app/dist/.*\.(js|css)$" uri))
         ;; GeoJSON proxy requests should also be cached
         (re-matches #"^/api/geojson/.*" uri))))
+
+(defn cacheable-24h?
+  "Can the ring request be privately cached?"
+  [{:keys [uri query-string], :as request}]
+  ;; cache /api/database/\d+/.+ and /api/collection/root/items endpoints
+  (or
+   (re-matches #"^/api/collection/root/items$" uri)
+   (re-matches #"^/api/database/\d+/.+" uri)))
