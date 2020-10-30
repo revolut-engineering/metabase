@@ -7653,3 +7653,15 @@ databaseChangeLog:
             referencedColumnNames: id
             constraintName: fk_view_log_ref_user_id
             onDelete: CASCADE
+
+  - changeSet:
+      id: 267
+      author: artur
+      comment: 'Added read_permissions back v0.36.8.2'
+      changes:
+        - addColumn:
+            tableName: report_card
+            columns:
+              name: read_permissions
+              type: text
+              remarks: 'Temporary solution to provide a backward compatibility to card revisions created before the update to v0.36.8.2'
