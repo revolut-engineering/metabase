@@ -52,7 +52,8 @@
    :public_uuid         nil
    :query_type          nil
    :cache_ttl           nil
-   :result_metadata     nil})
+   :result_metadata     nil
+   :read_permissions    nil})
 
 (defn- mbql-count-query
   ([]
