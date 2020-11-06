@@ -75,7 +75,7 @@ export const updateSegment = segment => {
 export const FETCH_REAL_DATABASES = Databases.actions.fetchList.toString();
 export const fetchRealDatabases = (reload = false) => {
   deprecated("metabase/redux/metadata fetchRealDatabases");
-  return Databases.actions.fetchList({ include: "tables" }, { reload });
+  return Databases.actions.fetchList({ }, { reload });
 };
 
 export const FETCH_DATABASE_METADATA = Databases.actions.fetchDatabaseMetadata.toString();

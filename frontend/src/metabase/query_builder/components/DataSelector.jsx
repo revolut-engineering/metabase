@@ -112,13 +112,13 @@ const FieldTriggerContent = ({ selectedDatabase, selectedField }) => {
       }) ||
       [],
     hasFetchedDatabasesWithTablesSaved: !!Databases.selectors.getList(state, {
-      entityQuery: { include: "tables", saved: true },
+      entityQuery: { saved: true },
     }),
     hasFetchedDatabasesWithSaved: !!Databases.selectors.getList(state, {
       entityQuery: { saved: true },
     }),
     hasFetchedDatabasesWithTables: !!Databases.selectors.getList(state, {
-      entityQuery: { include: "tables" },
+      entityQuery: { },
     }),
   }),
   {
