@@ -53,7 +53,7 @@ export const NotFound = () => (
 export const Unauthorized = () => (
   <ErrorPageWrapper>
     <EmptyState
-      title={t`Sorry, you don’t have permission to view the content of this collection.`}
+      title={t`Sorry, you don’t have permission to view the content of this collection. Please see https://revolut.atlassian.net/wiki/spaces/BD/pages/1593568569/Requesting+Access+for+Metabase+Permissions for more information`}
       illustrationElement={<Icon name="key" size={100} />}
     />
   </ErrorPageWrapper>
