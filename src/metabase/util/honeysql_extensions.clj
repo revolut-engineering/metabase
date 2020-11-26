@@ -85,8 +85,8 @@
     (cons 'identifier (cons identifier-type components))))
 
 ;; don't use `->Identifier` or `map->Identifier`. Use the `identifier` function instead, which cleans up its input
-(alter-meta! #'->Identifier    assoc :private true)
-(alter-meta! #'map->Identifier assoc :private true)
+(alter-meta! #'->Identifier    assoc :private :defn)
+(alter-meta! #'map->Identifier assoc :private :defn)
 
 (s/defn identifier :- Identifier
   "Define an identifer of type with `components`. Prefer this to using keywords for identifiers, as those do not

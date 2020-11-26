@@ -338,10 +338,6 @@
             (is (= {"Currency A" :read, "Currency A -> B" :read}
                    (nice-graph (graph/graph :currency)))))
 
-          (testing "Should be able to pass `::graph/all` to get a combined graph of all namespaces (used for saving revisions)"
-            (is (= {"Default A" :read, "Default A -> B" :read "Currency A" :read, "Currency A -> B" :read}
-                   (nice-graph (graph/graph ::graph/all)))))
-
           ;; bind a current user so CollectionRevisions get saved.
           (mt/with-test-user :crowberto
             (testing "Should be able to update the graph for the default namespace.\n"
