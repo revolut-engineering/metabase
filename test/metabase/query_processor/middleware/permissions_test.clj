@@ -207,7 +207,7 @@
               api/*current-user-permissions-set* (delay #{})]
       (is (schema= {:status   (s/eq :failed)
                     :class    (s/eq clojure.lang.ExceptionInfo)
-                    :error    (s/eq "Sorry, you do not have permission to access this database.")
+                    :error    (s/eq "Sorry, you do not have permission to access this database. Please see https://revolut.atlassian.net/wiki/x/Oe37Xg for more information.")
                     :ex-data  {:required-permissions (s/eq #{"/db/1/native/"})
                                :permissions-error?   (s/eq true)
                                :type                 (s/eq error-type/missing-required-permissions)
