@@ -103,7 +103,7 @@
 (def ^:private ^:dynamic ^Integer *query-execution-delay-ms* 10)
 
 (defn- test-query [query-kvs]
-  (merge {:cache-ttl 60, :query :abc} query-kvs))
+  (merge {:cache-ttl 60, :query :abc, :ignore-cache false} query-kvs))
 
 (defn- run-query* [& {:as query-kvs}]
   ;; clear out stale values in save/purge channels
@@ -217,18 +217,16 @@
     (with-mock-cache [save-chan]
       (run-query)
       (mt/wait-for-result save-chan)
-      (binding [cache/*ignore-cached-results* true]
-        (is (= :not-cached
-               (run-query)))))))
+      (is (= :not-cached
+              (run-query :ignore-cache true))))))
 
 (deftest ignore-cached-results-should-still-save-test
   (testing "...but if it's set those results should still be cached for next time."
     (with-mock-cache [save-chan]
-      (binding [cache/*ignore-cached-results* true]
-        (is (= true
-               (cacheable?)))
-        (run-query)
-        (mt/wait-for-result save-chan))
+      (is (= true
+              (cacheable?)))
+      (run-query :ignore-cache true)
+      (mt/wait-for-result save-chan)
       (is (= :cached
              (run-query))))))
 
