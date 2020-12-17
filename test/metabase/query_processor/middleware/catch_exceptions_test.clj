@@ -135,7 +135,7 @@
                   "the query in the error response")
       (is (schema= {:status   (s/eq :failed)
                     :class    (s/eq clojure.lang.ExceptionInfo)
-                    :error    (s/eq "Sorry, you do not have permission to access this database.")
+                    :error    (s/eq "Sorry, you do not have permission to access this database. See https://revolut.atlassian.net/wiki/x/Oe37Xg for more information.")
                     :ex-data  {:required-permissions (s/eq #{"/db/181/native/"})
                                :permissions-error?   (s/eq true)
                                :type                 (s/eq error-type/missing-required-permissions)}

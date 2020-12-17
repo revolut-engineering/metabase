@@ -115,7 +115,7 @@ export default class DashCard extends Component {
     } else if (errors.length > 0) {
       if (IS_EMBED_PREVIEW) {
         errorMessage = (errors[0] && errors[0].data) || ERROR_MESSAGE_GENERIC;
-      } else if (errors[0].includes("you don't have permission to access this database")) {
+      } else if (errors[0].includes("Sorry, you do not have permission to access this database")) {
         errorMessage = ERROR_MESSAGE_DB_PERMISSION;
       } else {
         errorMessage = ERROR_MESSAGE_GENERIC;

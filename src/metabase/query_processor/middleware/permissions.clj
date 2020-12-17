@@ -27,7 +27,7 @@
                       {:type error-type/missing-required-permissions})))))
 
 (defn- perms-exception [required-perms]
-  (ex-info (tru "Sorry, you do not have permission to access this database.")
+  (ex-info (tru "Sorry, you do not have permission to access this database. See https://revolut.atlassian.net/wiki/x/Oe37Xg for more information.")
     {:type                 error-type/missing-required-permissions
      :required-permissions required-perms
      :permissions-error?   true}))
