@@ -14,8 +14,6 @@
              [connection :as sql-jdbc.conn]
              [execute :as sql-jdbc.execute]
              [sync :as sql-jdbc.sync]]
-            [metabase
-             [config :as config]]
             [metabase.driver.sql-jdbc.execute.legacy-impl :as legacy]
             [metabase.driver.sql.query-processor :as sql.qp]
             [metabase.driver.sql.util.unprepare :as unprepare]
@@ -139,13 +137,14 @@
   (default-base-types column))
 
 (defmethod sql-jdbc.conn/connection-details->spec :exasol
-  [_ {:keys [host port schema querytimeout]
+  [_ {:keys [host port schema querytimeout connection_pool]
       :as   details}]
   (-> (merge {:classname   "com.exasol.jdbc.EXADriver"
               :subprotocol "exa"
               :subname     (str host ":" port)
               :schema schema
-              :querytimeout querytimeout}
+              :querytimeout querytimeout
+              :connection_pool connection_pool}
              (dissoc details :host :port :dbname :db :ssl))
       (sql-jdbc.common/handle-additional-options details)))
 
@@ -156,11 +155,7 @@
    "maxIdleTime"                  (* 3 60 60) ; 3 hours
    "minPoolSize"                  1
    "initialPoolSize"              1
-   "maxPoolSize"                  (cond
-                                    (= (spec :user) "metabase") (or (config/config-int :helios-connection-pool-size) 10)
-                                    (= (spec :user) "metabase_plus") (or (config/config-int :helios-plus-connection-pool-size) 10)
-                                    (= (spec :user) "metabase_finance") (or (config/config-int :helios-finance-connection-pool-size) 10)
-                                    :else 10)
+   "maxPoolSize"                  (spec :connection_pool)
    "testConnectionOnCheckout"     true
    "maxIdleTimeExcessConnections" (* 15 60)})
 
