@@ -157,10 +157,10 @@
    "minPoolSize"                  1
    "initialPoolSize"              1
    "maxPoolSize"                  (cond
-                                    (= (spec :user) "metabase") (or (config/config-int :helios-connection-pool-size) 20)
-                                    (= (spec :user) "metabase_plus") (or (config/config-int :helios-plus-connection-pool-size) 20)
-                                    (= (spec :user) "metabase_finance") (or (config/config-int :helios-finance-connection-pool-size) 20)
-                                    :else 5)
+                                    (= (spec :user) "metabase") (or (config/config-int :helios-connection-pool-size) 10)
+                                    (= (spec :user) "metabase_plus") (or (config/config-int :helios-plus-connection-pool-size) 10)
+                                    (= (spec :user) "metabase_finance") (or (config/config-int :helios-finance-connection-pool-size) 10)
+                                    :else 10)
    "testConnectionOnCheckout"     true
    "maxIdleTimeExcessConnections" (* 15 60)})
 
