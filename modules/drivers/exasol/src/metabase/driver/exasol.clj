@@ -14,6 +14,8 @@
              [connection :as sql-jdbc.conn]
              [execute :as sql-jdbc.execute]
              [sync :as sql-jdbc.sync]]
+            [metabase
+             [config :as config]]
             [metabase.driver.sql-jdbc.execute.legacy-impl :as legacy]
             [metabase.driver.sql.query-processor :as sql.qp]
             [metabase.driver.sql.util.unprepare :as unprepare]
@@ -146,6 +148,21 @@
               :querytimeout querytimeout}
              (dissoc details :host :port :dbname :db :ssl))
       (sql-jdbc.common/handle-additional-options details)))
+
+(defmethod sql-jdbc.conn/data-warehouse-connection-pool-properties :exasol
+  [_ spec]
+  {
+   "acquireIncrement"             1
+   "maxIdleTime"                  (* 3 60 60) ; 3 hours
+   "minPoolSize"                  1
+   "initialPoolSize"              1
+   "maxPoolSize"                  (cond
+                                    (= (spec :user) "metabase") (or (config/config-int :helios-connection-pool-size) 20)
+                                    (= (spec :user) "metabase_plus") (or (config/config-int :helios-plus-connection-pool-size) 20)
+                                    (= (spec :user) "metabase_finance") (or (config/config-int :helios-finance-connection-pool-size) 20)
+                                    :else 5)
+   "testConnectionOnCheckout"     true
+   "maxIdleTimeExcessConnections" (* 15 60)})
 
 (defmethod sql-jdbc.execute/set-timezone-sql :exasol [_]
   "ALTER SESSION SET time_zone = %s;")
