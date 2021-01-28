@@ -36,6 +36,12 @@
     [initial-metadata row-1 row-2 ... row-n final-metadata]"
   3)
 
+;; TODO - Why not make this an option in the query itself? :confused:
+(def ^:dynamic ^Boolean *ignore-cached-results*
+  "Should we force the query to run, ignoring cached results even if they're available?
+  Setting this to `true` will run the query again and will still save the updated results."
+  false)
+
 (def ^:dynamic *backend*
   "Current cache backend. Dynamically rebindable primary for test purposes."
   (i/cache-backend (config/config-kw :mb-qp-cache-backend)))
@@ -82,7 +88,7 @@
 
         (log/error (trs "Cannot cache results: expected byte array, got {0}" (class x)))))))
 
-(defn- save-results-xform [start-time metadata query-hash rf]
+(defn- save-results-xform [start-time metadata query-hash ignore-cache rf]
   (let [{:keys [in-chan out-chan]} (impl/serialize-async)
         has-rows?                  (volatile! false)]
     (a/put! in-chan (assoc metadata
@@ -100,7 +106,7 @@
          (log/info (trs "Query took {0} to run; miminum for cache eligibility is {1}"
                         (u/format-milliseconds duration-ms) (u/format-milliseconds (min-duration-ms))))
          (when (and @has-rows?
-                    (> duration-ms (min-duration-ms)))
+                    (or (> duration-ms (min-duration-ms)) ignore-cache))
            (cache-results-async! query-hash out-chan)))
        (rf result))
 
@@ -174,13 +180,13 @@
   ;; TODO - Query will already have `info.hash` if it's a userland query. I'm not 100% sure it will be the same hash,
   ;; because this is calculated after normalization, instead of before
   (let [query-hash (qputil/query-hash query)
-        result (maybe-reduce-cached-results query-hash cache-ttl rff context ignore-cache)]
+        result     (maybe-reduce-cached-results query-hash cache-ttl rff context ignore-cache)]
     (when (= result ::miss)
       (let [start-time-ms (System/currentTimeMillis)]
         (log/trace "Running query and saving cached results (if eligible)...")
         (qp query
             (fn [metadata]
-              (save-results-xform start-time-ms metadata query-hash (rff metadata)))
+              (save-results-xform start-time-ms metadata query-hash ignore-cache (rff metadata)))
             context)))))
 
 (defn- is-cacheable? {:arglists '([query])} [{:keys [cache-ttl]}]

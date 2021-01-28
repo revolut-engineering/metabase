@@ -626,7 +626,9 @@
 (api/defendpoint ^:streaming POST "/:card-id/query"
   "Run the query associated with a Card."
   [card-id :as {{:keys [parameters ignore_cache], :or {ignore_cache false}} :body}]
-  (run-query-for-card-async card-id :api, :parameters parameters :ignore-cache ignore_cache))
+  {ignore_cache (s/maybe s/Bool)}
+  (binding [cache/*ignore-cached-results* ignore_cache]
+    (run-query-for-card-async card-id :api, :parameters parameters :ignore-cache ignore_cache)))
 
 (api/defendpoint ^:streaming POST "/:card-id/query/:export-format"
   "Run the query associated with a Card, and return its results as a file in the specified format. Note that this
@@ -642,7 +644,7 @@
     :middleware  {:skip-results-metadata? true
                   :format-rows?           false
                   :js-int-to-string?      false}
-    :ignore-cache true))
+    :ignore-cache false))
 
 
 ;;; ----------------------------------------------- Sharing is Caring ------------------------------------------------

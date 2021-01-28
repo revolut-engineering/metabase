@@ -388,14 +388,14 @@
 (deftest caching-big-resultsets
   (testing "Make sure we can save large result sets without tripping over internal async buffers"
     (is (= 10000 (count (transduce identity
-                                   (#'cache/save-results-xform 0 {} (byte 0) conj)
+                                   (#'cache/save-results-xform 0 {} (byte 0) false conj)
                                    (repeat 10000 [1]))))))
   (testing "Make sure we don't block somewhere if we decide not to save results"
     (is (= 10000 (count (transduce identity
-                                   (#'cache/save-results-xform (System/currentTimeMillis) {} (byte 0) conj)
+                                   (#'cache/save-results-xform (System/currentTimeMillis) {} (byte 0) false conj)
                                    (repeat 10000 [1]))))))
   (testing "Make sure we properly handle situations where we abort serialization (e.g. due to result being too big)"
     (let [max-bytes (* (public-settings/query-caching-max-kb) 1024)]
       (is (= max-bytes (count (transduce identity
-                                         (#'cache/save-results-xform 0 {} (byte 0) conj)
+                                         (#'cache/save-results-xform 0 {} (byte 0) false conj)
                                          (repeat max-bytes [1]))))))))
