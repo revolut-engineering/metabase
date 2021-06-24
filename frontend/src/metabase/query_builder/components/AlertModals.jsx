@@ -107,7 +107,7 @@ export class CreateAlertModalContent extends Component {
 
   componentWillMount() {
     // loads the channel information
-//     this.props.fetchPulseFormInput();
+    this.props.fetchPulseFormInput();
   }
 
   onAlertChange = alert => this.setState({ alert });
@@ -597,7 +597,7 @@ export class AlertEditChannels extends Component {
   };
 
   componentDidMount() {
-//     this.props.fetchPulseFormInput();
+    this.props.fetchPulseFormInput();
   }
 
   // Technically pulse definition is equal to alert definition
