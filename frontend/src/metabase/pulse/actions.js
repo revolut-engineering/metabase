@@ -35,7 +35,9 @@ export const setEditingPulse = createThunkAction(SET_EDITING_PULSE, function(
       }
     } else {
       // HACK: need a way to wait for form_input to finish loading
-      const channels = undefined;
+      const channels =
+        getPulseFormInput(getState()).channels ||
+        (await PulseApi.form_input()).channels;
       const defaultChannelSpec = getDefaultChannel(channels);
       return {
         name: null,
