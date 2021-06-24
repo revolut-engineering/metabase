@@ -41,7 +41,7 @@ export default class PulseEdit extends Component {
       this.props.pulseId,
       this.props.initialCollectionId,
     );
-    this.props.fetchPulseFormInput();
+//     this.props.fetchPulseFormInput();
 
     MetabaseAnalytics.trackEvent(
       this.props.pulseId ? "PulseEdit" : "PulseCreate",
