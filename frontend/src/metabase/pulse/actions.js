@@ -80,7 +80,7 @@ export const fetchPulseFormInput = createThunkAction(
   FETCH_PULSE_FORM_INPUT,
   function() {
     return async function(dispatch, getState) {
-      return await PulseApi.form_input();
+      return await sleep(500);
     };
   },
 );
